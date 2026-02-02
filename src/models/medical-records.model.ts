@@ -62,3 +62,37 @@ export const findMedicalRecordsByPet = async (petId: string): Promise<MedicalRec
     vetId: h.vetId.toString()
   }));
 };
+
+// 3. Buscar una historia por ID (Para editarla o ver detalle)
+export const findMedicalRecordById = async (id: string): Promise<MedicalRecordData | null> => {
+  const h = await MedicalRecord.findById(id).lean();
+  if (!h) return null;
+
+  return {
+    id: h._id.toString(),
+    descripcion: h.descripcion,
+    fecha: h.fecha,
+    petId: h.petId.toString(),
+    vetId: h.vetId.toString()
+  };
+};
+
+// 4. Actualizar (Solo el veterinario usará esto)
+export const updateMedicalRecord = async (id: string, data: Partial<MedicalRecordData>): Promise<MedicalRecordData | null> => {
+  const h = await MedicalRecord.findByIdAndUpdate(id, data, { new: true }).lean();
+  if (!h) return null;
+  
+  return {
+    id: h._id.toString(),
+    descripcion: h.descripcion,
+    fecha: h.fecha,
+    petId: h.petId.toString(),
+    vetId: h.vetId.toString()
+  };
+};
+
+// 5. Borrar
+export const deleteMedicalRecord = async (id: string): Promise<boolean> => {
+  const result = await MedicalRecord.findByIdAndDelete(id);
+  return !!result;
+};

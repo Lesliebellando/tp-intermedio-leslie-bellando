@@ -1,33 +1,28 @@
-import { body } from 'express-validator';
-import { ValidationChain } from 'express-validator';
+import { body, ValidationChain } from 'express-validator';
 
-const description: ValidationChain[] = [
-  body('description')
+export const petValidator: ValidationChain[] = [
+  body('nombre')
+    .notEmpty()
+    .withMessage('El nombre de la mascota es obligatorio')
+    .isString()
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage('El nombre debe tener al menos 2 letras'),
+
+  body('especie')
+    .notEmpty()
+    .withMessage('La especie es obligatoria (ej: perro, gato)')
+    .isString()
+    .trim(),
+
+  body('raza')
     .optional()
     .isString()
-    .withMessage('La descripción debe ser una cadena de texto')
-    .isLength({ max: 200 })
-    .withMessage('La descripción no puede exceder los 200 caracteres'),
-];
+    .trim(),
 
-const name: ValidationChain[] = [
-  body('name')
-    .notEmpty()
-    .withMessage('El nombre de la categoría es obligatorio')
-    .isString()
-    .withMessage('El nombre de la categoría debe ser una cadena de texto')
-    .isLength({ max: 50, min: 3 })
-    .withMessage(
-      'El nombre de la categoría debe tener entre 3 y 50 caracteres',
-    ),
-];
-
-export const createCategoryValidator: ValidationChain[] = [
-  ...name,
-  ...description,
-];
-
-export const updateCategoryValidator: ValidationChain[] = [
-  ...name,
-  ...description,
+  body('fechaNacimiento')
+    .optional()
+    .isISO8601()
+    .withMessage('La fecha debe tener formato YYYY-MM-DD')
+    .toDate(),
 ];

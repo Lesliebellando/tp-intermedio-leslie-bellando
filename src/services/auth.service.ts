@@ -6,12 +6,14 @@ import { JwtPayload, UserRole } from '../types/auth';
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET no definido');
 }
+
 const secretKey: string = process.env.JWT_SECRET;
 
 export const register = async (
   username: string,
   email: string,
-  password: string
+  password: string,
+  role: UserRole = UserRole.USER
 ): Promise<string> => {
   const hashedPassword = await bcrypt.hash(password, 10);
 

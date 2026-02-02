@@ -11,22 +11,24 @@ Este archivo contiene ejemplos de CURL para todos los endpoints del proyecto bac
 ### 1. Registrar un nuevo usuario
 
 ```bash
-curl -X POST http://localhost:3000/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
-    "username": "juan",
-    "email": "juan@example.com",
-    "password": "password123"
+    "username": "SusananaDuena",
+    "email": "susana@patitas.com",
+    "password": "Password123!"
   }'
+
 ```
 
 ### 2. Login (obtener token JWT)
 
 ```bash
-curl -X POST http://localhost:3000/auth/login \
+curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-		"email": "pepe@example.com", "password":"Password123!"
+    "email": "susana@patitas.com",
+    "password": "Password123!"
   }'
 ```
 
@@ -34,7 +36,7 @@ curl -X POST http://localhost:3000/auth/login \
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2ZhNDNmZmY4YzU3YmI3MDA1NTcxNiIsInVzZXJuYW1lIjoiU3VzYW5hRHVlbmEiLCJyb2xlIjoidXNlciIsImlhdCI6MTc2OTk3MzM3MywiZXhwIjoxNzcwMDU5NzczLCJpc3MiOiJjdXJzby11dG4tYmFja2VuZCJ9.LdHmNWmLkbACCvd-j_3ujzY4cAIQlovF5lIFZN2D4oY"
 }
 ```
 

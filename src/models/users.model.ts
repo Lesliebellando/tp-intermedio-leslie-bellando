@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { UserRole } from '../types/auth';
 
+//a diferencia de MySQL, en MongoDB no es necesario definir las tablas y sus columnas de antemano las estructuras se definen por codigo mediante esquemas. 
+//en dependencia cambiar MySQL2 por mongoose
 export interface IUser extends Document {
   username: string;
   email: string;
@@ -9,6 +11,7 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 const userSchema = new Schema<IUser>(
   {
@@ -35,7 +38,7 @@ const userSchema = new Schema<IUser>(
     role: {
       type: String,
       enum: Object.values(UserRole),
-      default: 'user',
+      default: UserRole.USER,
     } as any,
   },
   {
@@ -47,8 +50,9 @@ userSchema.index({ email: 1 });
 userSchema.index({ username: 1 });
 
 export const User = mongoose.model<IUser>('User', userSchema);
+//mongoose.model(nombreDelModelo, schema)
 
-
+//userdata es lo que se devuelve al controller y luego al cliente
 export interface UserData {
   id: string;
   username: string;
@@ -61,9 +65,10 @@ export const findUser = async (
   email: string = '',
   username: string = ''
 ): Promise<UserData | null> => {
-  const user = await User.findOne({
-    $or: [{ email }, { username }],
-  });
+const user = await User.findOne({
+  $or: [{ email }, { username }],
+}).lean();
+
 
   if (!user) return null;
 
@@ -77,14 +82,14 @@ export const findUser = async (
 };
 
 export const createUser = async (
-  user: Omit<UserData, 'id' | 'role'>
+  user: Omit<UserData, 'id'> 
 ): Promise<string> => {
   const newUser = new User({
     username: user.username,
     email: user.email,
     password: user.password,
-    role: 'user', 
-  });
+    role:  user.role,
+  }); //en mysql se usa un trigger para asignar el role por defecto en mongo lo asignamos directamente por defecto en el esquema
 
   const savedUser = await newUser.save();
   return savedUser._id.toString();

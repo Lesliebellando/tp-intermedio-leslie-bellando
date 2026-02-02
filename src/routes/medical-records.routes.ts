@@ -1,29 +1,51 @@
 import { Router } from 'express';
-
-import * as productController from '../controllers/product.controller';
-import { authenticate, authorize } from '../middlewares/auth.middleware';
+import {
+  createMedicalRecord,
+  getMedicalRecordsByPet,
+  getMedicalRecordById,
+  updateMedicalRecord,
+  deleteMedicalRecord
+} from '../controllers/medical-record.controller';
+import { authenticate, authorize } from '../middlewares/auth.middleware'; // Autenticación y Autorización
+import { medicalRecordValidator } from '../validators/medical-records.validator';
+import validateDto from '../middlewares/dto.middleware';
+import { UserRole } from '../types/auth';
 
 const router = Router();
 
-router.get('/', productController.getAllProducts);
-router.get('/:id', productController.getProductById);
+// Middleware de autenticación para todas las rutas de este router
+router.use(authenticate);
+
+// Read (Vets y Dueños) 
+// El controlador se encarga de verificar que la mascota pertenezca al dueño o que el usuario sea veterinario
+router.get('/pet/:petId', getMedicalRecordsByPet);
+router.get('/:id', getMedicalRecordById);
+
+
+//authorize([UserRole.ADMIN]) sirve para bloquear a usuarios que no sean admin
+//Create (Admin)
 router.post(
-  '/',
-  authenticate,
-  authorize(['admin']),
-  productController.createProduct,
+  '/', 
+  authorize([UserRole.ADMIN]), // Solo Admin
+  medicalRecordValidator,      // Validar datos
+  validateDto,                 // Chequear errores
+  createMedicalRecord
 );
+
+//Update (Admin)
 router.put(
-  '/:id',
-  authenticate,
-  authorize(['admin']),
-  productController.updateProduct,
+  '/:id', 
+  authorize([UserRole.ADMIN]), 
+  medicalRecordValidator,      // Validar los datos nuevos
+  validateDto, 
+  updateMedicalRecord
 );
+
+//Delete (Admin)
 router.delete(
-  '/:id',
-  authenticate,
-  authorize(['admin']),
-  productController.deleteProduct,
+  '/:id', 
+  authorize([UserRole.ADMIN]), 
+  deleteMedicalRecord
 );
 
 export default router;
