@@ -29,70 +29,70 @@ export const MedicalRecord = mongoose.model<IMedicalRecord>(
 
 
 
-export interface MedicalRecordData {
-  id: string;
-  descripcion: string;
-  fecha: Date;
-  petId: string;
-  vetId: string;
-}
+// export interface MedicalRecordData {
+//   id: string;
+//   descripcion: string;
+//   fecha: Date;
+//   petId: string;
+//   vetId: string;
+// }
 
-// Crear historia clínica
-export const createMedicalRecord = async (
-  data: Omit<MedicalRecordData, 'id' | 'fecha'>
-): Promise<string> => {
-  const newMedicalRecord = new MedicalRecord({
-    descripcion: data.descripcion,
-    petId: data.petId,
-    vetId: data.vetId,
-  });
-  const saved = await newMedicalRecord.save();
-  return saved._id.toString();
-};
+// // Crear historia clínica
+// export const createMedicalRecord = async (
+//   data: Omit<MedicalRecordData, 'id' | 'fecha'>
+// ): Promise<string> => {
+//   const newMedicalRecord = new MedicalRecord({
+//     descripcion: data.descripcion,
+//     petId: data.petId,
+//     vetId: data.vetId,
+//   });
+//   const saved = await newMedicalRecord.save();
+//   return saved._id.toString();
+// };
 
-// Buscar historias de una mascota
-export const findMedicalRecordsByPet = async (petId: string): Promise<MedicalRecordData[]> => {
-  const histories = await MedicalRecord.find({ petId }).lean();
+// // Buscar historias de una mascota
+// export const findMedicalRecordsByPet = async (petId: string): Promise<MedicalRecordData[]> => {
+//   const histories = await MedicalRecord.find({ petId }).lean();
   
-  return histories.map(h => ({
-    id: h._id.toString(),
-    descripcion: h.descripcion,
-    fecha: h.fecha,
-    petId: h.petId.toString(),
-    vetId: h.vetId.toString()
-  }));
-};
+//   return histories.map(h => ({
+//     id: h._id.toString(),
+//     descripcion: h.descripcion,
+//     fecha: h.fecha,
+//     petId: h.petId.toString(),
+//     vetId: h.vetId.toString()
+//   }));
+// };
 
-// 3. Buscar una historia por ID (Para editarla o ver detalle)
-export const findMedicalRecordById = async (id: string): Promise<MedicalRecordData | null> => {
-  const h = await MedicalRecord.findById(id).lean();
-  if (!h) return null;
+// // 3. Buscar una historia por ID (Para editarla o ver detalle)
+// export const findMedicalRecordById = async (id: string): Promise<MedicalRecordData | null> => {
+//   const h = await MedicalRecord.findById(id).lean();
+//   if (!h) return null;
 
-  return {
-    id: h._id.toString(),
-    descripcion: h.descripcion,
-    fecha: h.fecha,
-    petId: h.petId.toString(),
-    vetId: h.vetId.toString()
-  };
-};
+//   return {
+//     id: h._id.toString(),
+//     descripcion: h.descripcion,
+//     fecha: h.fecha,
+//     petId: h.petId.toString(),
+//     vetId: h.vetId.toString()
+//   };
+// };
 
-// 4. Actualizar (Solo el veterinario usará esto)
-export const updateMedicalRecord = async (id: string, data: Partial<MedicalRecordData>): Promise<MedicalRecordData | null> => {
-  const h = await MedicalRecord.findByIdAndUpdate(id, data, { new: true }).lean();
-  if (!h) return null;
+// // 4. Actualizar (Solo el veterinario usará esto)
+// export const updateMedicalRecord = async (id: string, data: Partial<MedicalRecordData>): Promise<MedicalRecordData | null> => {
+//   const h = await MedicalRecord.findByIdAndUpdate(id, data, { new: true }).lean();
+//   if (!h) return null;
   
-  return {
-    id: h._id.toString(),
-    descripcion: h.descripcion,
-    fecha: h.fecha,
-    petId: h.petId.toString(),
-    vetId: h.vetId.toString()
-  };
-};
+//   return {
+//     id: h._id.toString(),
+//     descripcion: h.descripcion,
+//     fecha: h.fecha,
+//     petId: h.petId.toString(),
+//     vetId: h.vetId.toString()
+//   };
+// };
 
-// 5. Borrar
-export const deleteMedicalRecord = async (id: string): Promise<boolean> => {
-  const result = await MedicalRecord.findByIdAndDelete(id);
-  return !!result;
-};
+// // 5. Borrar
+// export const deleteMedicalRecord = async (id: string): Promise<boolean> => {
+//   const result = await MedicalRecord.findByIdAndDelete(id);
+//   return !!result;
+// };

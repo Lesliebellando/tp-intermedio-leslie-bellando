@@ -1,52 +1,40 @@
 
-import * as petModel from '../models/pet.model';
-import { UserRole } from '../types/auth';
+import { MedicalRecord } from '../models/medical-records.model';
+import { Pet } from '../models/pet.model';
+import { IPet } from '../types/pet';
 
 
 //CRUD
 // Create
-export const createPet = async (
-    data: Omit<petModel.PetData, 'id'>): Promise<string> => {
-  return await petModel.createPet(data);
+export const createPet = async (data: Partial<IPet>) => {
+  const newPet = new Pet(data);
+  return await newPet.save();
 };
 
-// Read All
-export const getAllPets = async (userId: string, role: UserRole) => {
-  if (role === UserRole.ADMIN) {
-    return await petModel.findAllPets();
-  }
-
-  return await petModel.findPetsByOwner(userId);
+// Get all
+export const getAllPets = async () => {
+  return await Pet.find();
 };
 
 
 
-// Read by ID
-export const getPetById = async (id: string, userId: string, role: UserRole) => {
-  const pet = await petModel.findPetById(id);
-  if (!pet) return null;
-
-  if (role === UserRole.ADMIN || pet.ownerId === userId) {
-    return pet;
-  }
-
-  return null;
+// Get by ID
+export const getPetById = async (id: string) => {
+  return await Pet.findById(id);
 };
 
-// Read by Owner
-export const getPetsByOwner = async (ownerId: string) => {
-  return await petModel.findPetsByOwner(ownerId);
-};
-// Update 
-export const updatePet = async (
-  id: string,
-  data: Partial<petModel.PetData>
-) => {
-  return await petModel.updatePet(id, data);
+// Update
+export const updatePet = async (id: string, data: Partial<IPet>) => {
+  return await Pet.findByIdAndUpdate(id, data, { new: true });
 };
 
 // Delete
 export const deletePet = async (id: string) => {
-  const deleted = await petModel.deletePet(id);
-  return deleted;
+  const deletedPet = await Pet.findByIdAndDelete(id);
+  
+  if (deletedPet) {
+    await MedicalRecord.deleteMany({ petId: id });
+  }
+  
+  return deletedPet;
 };

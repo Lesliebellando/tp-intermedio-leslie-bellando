@@ -1,33 +1,31 @@
 import * as medicalModel from '../models/medical-records.model';
-
+import { IMedicalRecord, MedicalRecord } from '../models/medical-records.model';
 // CRUD
 
 // Create
 export const createMedicalRecord = async (
-  data: Omit<medicalModel.MedicalRecordData, 'id' | 'fecha'>
+  data: Partial<IMedicalRecord>
 ) => {
-  return await medicalModel.createMedicalRecord(data);
+  const record = new MedicalRecord(data)
+  return await record.save();
 };
 
 // Read all by Pet
 export const getMedicalRecordsByPet = async (petId: string) => {
-  return await medicalModel.findMedicalRecordsByPet(petId);
+  return await MedicalRecord.find({ petId }).populate('vetId', 'username email');
 };
 
 // Read by ID
 export const getMedicalRecordById = async (id: string) => {
-  return await medicalModel.findMedicalRecordById(id);
+  return await MedicalRecord.findById(id) .populate('vetId', 'username') .populate('petId', 'nombre especie');
 };
 
 // Update
-export const updateMedicalRecord = async (
-  id: string,
-  data: Partial<medicalModel.MedicalRecordData>
-) => {
-  return await medicalModel.updateMedicalRecord(id, data);
+export const updateMedicalRecord = async (id: string, data: Partial<IMedicalRecord>) => {
+  return await MedicalRecord.findByIdAndUpdate(id, data, { new: true });
 };
 
 // Delete
 export const deleteMedicalRecord = async (id: string) => {
-  return await medicalModel.deleteMedicalRecord(id);
+  return await MedicalRecord.findByIdAndDelete(id);
 };
