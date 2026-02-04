@@ -12,12 +12,12 @@ export const createMedicalRecord = async (
 
 // Read all by Pet
 export const getMedicalRecordsByPet = async (petId: string) => {
-  return await MedicalRecord.find({ petId }).populate('vetId', 'username email');
+  return await MedicalRecord.find({ petId }).populate('vetId', 'username email').populate('petId', 'nombre especie');
 };
 
 // Read by ID
 export const getMedicalRecordById = async (id: string) => {
-  return await MedicalRecord.findById(id) .populate('vetId', 'username') .populate('petId', 'nombre especie');
+  return await MedicalRecord.findById(id) .populate('vetId', 'username email') .populate('petId', 'nombre especie');
 };
 
 // Update
