@@ -1,173 +1,282 @@
-# 🐾 CURLS - TP Intermedio API
+# 🐾 CURL API - TP Intermedio
 
-Aquí están todos los curls para probar la API. Copia y pega directamente en tu terminal.
+Guía completa de todos los endpoints con ejemplos de cURL listos para usar.
+
+## 🔑 REEMPLAZOS NECESARIOS
+
+Antes de ejecutar los curls, reemplaza estos valores:
+
+- `{{TOKEN}}` → El token JWT que obtienes en Login
+- `{{ID_MASCOTA}}` → El `_id` de una mascota (ej: `64a1b2c3d4e5f6g7h8i9j0k1`)
+- `{{ID_REGISTRO}}` → El `_id` de un registro médico
+
+**Base URL:** `http://localhost:3000/api`
 
 ---
 
 ## 🔐 AUTENTICACIÓN
 
-### 1️⃣ Registrar usuario
+### 1. Registrar usuario (POST /auth/register)
 
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
-    "username": "DrHouse",
-    "email": "house@vet.com",
+    "username": "VetUser",
+    "email": "vet@correo.com",
     "password": "Password123!"
   }'
 ```
 
-### 2️⃣ Login (obtener TOKEN)
+**Respuesta:** Devuelve los datos del usuario creado
+
+---
+
+### 2. Login (POST /auth/login)
 
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "house@vet.com",
+    "email": "vet@correo.com",
     "password": "Password123!"
   }'
 ```
 
-**💾 COPIA EL TOKEN DE LA RESPUESTA Y ÚSALO EN LOS SIGUIENTES CURLS**
-
----
+## **Respuesta:** Devuelve `{"token": "eyJhbGc..."}` - Copia este token para usarlo en los siguientes endpoints
 
 ## 🐶 MASCOTAS
 
-### 3️⃣ Ver todas las mascotas
+### 3. Crear mascota (POST /pets)
 
-```bash
-curl -X GET http://localhost:3000/api/pets \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcwMTUxMDcxLCJleHAiOjE3NzAyMzc0NzEsImlzcyI6ImN1cnNvLXV0bi1iYWNrZW5kIn0.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ"
-```
-
-### 4️⃣ Ver mascota por ID
-
-```bash
-curl -X GET http://localhost:3000/api/pets/697fa43fff8c57bb70055716 \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcwMTUxMDcxLCJleHAiOjE3NzAyMzc0NzEsImlzcyI6ImN1cnNvLXV0bi1iYWNrZW5kIn0.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ"
-```
-
-### 5️⃣ Crear mascota
+**Requiere:** Autenticación | **Rol:** Admin
 
 ```bash
 curl -X POST http://localhost:3000/api/pets \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MDE1MTAwMCwiZXhwIjoxNzcwMjM3NDAwLCJpc3MiOiJjdXJzby11dG4tYmFja2VuZCJ9.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ" \
+  -H "Authorization: Bearer {{TOKEN}}" \
   -d '{
-    "nombre": "Firulais",
+    "nombre": "Toby",
     "especie": "Perro",
-    "raza": "Mestizo",
-    "fechaNacimiento": "2020-05-20"
+    "raza": "Golden Retriever",
+    "fechaNacimiento": "2021-08-15",
+    "nombreDueno": "Carlos Rodriguez",
+    "telefonoDueno": "3796789012"
   }'
 ```
 
-### 6️⃣ Actualizar mascota
+**Parámetros obligatorios:**
+
+- `nombre` (string, min 2 caracteres)
+- `especie` (string)
+- `nombreDueno` (string, min 3 caracteres)
+- `telefonoDueno` (string)
+
+**Parámetros opcionales:**
+
+- `raza` (string)
+- `fechaNacimiento` (date, formato: YYYY-MM-DD)
+
+---
+
+### 4. Listar todas las mascotas (GET /pets)
+
+**Requiere:** Autenticación
 
 ```bash
-curl -X PUT http://localhost:3000/api/pets/697fa43fff8c57bb70055716 \
+curl -X GET http://localhost:3000/api/pets \
+  -H "Authorization: Bearer {{TOKEN}}"
+```
+
+---
+
+### 5. Ver mascota por ID (GET /pets/:id)
+
+**Requiere:** Autenticación
+
+```bash
+curl -X GET http://localhost:3000/api/pets/{{ID_MASCOTA}} \
+  -H "Authorization: Bearer {{TOKEN}}"
+```
+
+---
+
+### 6. Actualizar mascota (PUT /pets/:id)
+
+**Requiere:** Autenticación | **Rol:** Admin
+
+```bash
+curl -X PUT http://localhost:3000/api/pets/{{ID_MASCOTA}} \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MDE1MTAwMCwiZXhwIjoxNzcwMjM3NDAwLCJpc3MiOiJjdXJzby11dG4tYmFja2VuZCJ9.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ" \
+  -H "Authorization: Bearer {{TOKEN}}" \
   -d '{
-    "nombre": "Max",
+    "nombre": "Toby",
     "especie": "Perro",
-    "raza": "Labrador",
-    "fechaNacimiento": "2020-05-20"
+    "raza": "Golden Retriever",
+    "fechaNacimiento": "2021-08-15",
+    "nombreDueno": "Carlos Rodriguez",
+    "telefonoDueno": "3796789999"
   }'
 ```
 
-### 7️⃣ Eliminar mascota (requiere ADMIN)
+---
+
+### 7. Eliminar mascota (DELETE /pets/:id)
+
+**Requiere:** Autenticación | **Rol:** Admin
 
 ```bash
-curl -X DELETE http://localhost:3000/api/pets/697fa43fff8c57bb70055716 \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MDE1MTAwMCwiZXhwIjoxNzcwMjM3NDAwLCJpc3MiOiJjdXJzby11dG4tYmFja2VuZCJ9.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ"
+curl -X DELETE http://localhost:3000/api/pets/{{ID_MASCOTA}} \
+  -H "Authorization: Bearer {{TOKEN}}"
 ```
 
 ---
 
 ## 📋 REGISTROS MÉDICOS
 
-### 8️⃣ Ver registros de una mascota
+### 8. Crear registro médico (POST /medical-records)
 
-```bash
-curl -X GET http://localhost:3000/api/medical-records/pet/697fa43fff8c57bb70055716 \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcwMTUxMDcxLCJleHAiOjE3NzAyMzc0NzEsImlzcyI6ImN1cnNvLXV0bi1iYWNrZW5kIn0.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ"
-```
-
-### 9️⃣ Ver registro médico por ID
-
-```bash
-curl -X GET http://localhost:3000/api/medical-records/697fa43fff8c57bb70055717 \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcwMTUxMDcxLCJleHAiOjE3NzAyMzc0NzEsImlzcyI6ImN1cnNvLXV0bi1iYWNrZW5kIn0.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ"
-```
-
-### 🔟 Crear registro médico (requiere ADMIN)
+**Requiere:** Autenticación | **Rol:** Admin
 
 ```bash
 curl -X POST http://localhost:3000/api/medical-records \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MDE1MTAwMCwiZXhwIjoxNzcwMjM3NDAwLCJpc3MiOiJjdXJzby11dG4tYmFja2VuZCJ9.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ" \
+  -H "Authorization: Bearer {{TOKEN}}" \
   -d '{
-    "petId": "697fa43fff8c57bb70055716",
-    "fecha": "2026-02-03",
-    "tipo": "Vacunación",
-    "descripcion": "Vacuna anti-rabia anual",
-    "veterinario": "Dr. García"
+    "petId": "{{ID_MASCOTA}}",
+    "descripcion": "Paciente presenta decaimiento. Se realiza control de temperatura y signos vitales.",
+    "fecha": "2026-02-04"
   }'
 ```
 
-### 1️⃣1️⃣ Actualizar registro médico (requiere ADMIN)
+**Parámetros obligatorios:**
+
+- `petId` (string, debe ser un ObjectId válido)
+- `descripcion` (string, entre 10 y 500 caracteres)
+
+**Parámetros opcionales:**
+
+- `fecha` (date, formato: YYYY-MM-DD, default: fecha actual)
+
+---
+
+### 9. Ver registros de una mascota (GET /medical-records/pet/:petId)
+
+**Requiere:** Autenticación
 
 ```bash
-curl -X PUT http://localhost:3000/api/medical-records/AQUI_VA_EL_ID_DEL_REGISTRO \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer AQUI_VA_TU_TOKEN" \
-  -d '{
-    "petId": "AQUI_VA_EL_ID_DE_LA_MASCOTA",
-    "fecha": "2026-02-04",
-    "tipo": "Chequeo General",
-    "descripcion": "Chequeo de rutina completo",
-    "veterinario": "Dra. López"
-  }'
-```
-
-### 1️⃣2️⃣ Eliminar registro médico (requiere ADMIN)
-
-```bash
-curl -X DELETE http://localhost:3000/api/medical-records/697fa43fff8c57bb70055717 \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODI1YjhhZjVmM2Y2YzU2NjAzZTJkOCIsInVzZXJuYW1lIjoiRHJIb3VzZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MDE1MTAwMCwiZXhwIjoxNzcwMjM3NDAwLCJpc3MiOiJjdXJzby11dG4tYmFja2VuZCJ9.ZwQFUmBLFjyNHIG1Sf53iqdDHIvpyjAdEmKnAFiIrJQ"
+curl -X GET http://localhost:3000/api/medical-records/pet/{{ID_MASCOTA}} \
+  -H "Authorization: Bearer {{TOKEN}}"
 ```
 
 ---
 
-## 📝 REEMPLAZOS NECESARIOS
+### 10. Ver registro médico por ID (GET /medical-records/:id)
 
-Antes de ejecutar los curls, reemplaza en los comandos:
+**Requiere:** Autenticación
 
-| Código                     | Reemplazar por             |
-| -------------------------- | -------------------------- |
-| `eyJhbGciOi...`            | Tu TOKEN (obtén de login)  |
-| `697fa43fff8c57bb70055716` | ID real de mascota         |
-| `697fa43fff8c57bb70055717` | ID real de registro médico |
+```bash
+curl -X GET http://localhost:3000/api/medical-records/{{ID_REGISTRO}} \
+  -H "Authorization: Bearer {{TOKEN}}"
+```
 
 ---
 
-## ⚡ COMANDOS RÁPIDOS
+### 11. Actualizar registro médico (PUT /medical-records/:id)
 
-**Copiar y ejecutar directamente:**
+**Requiere:** Autenticación | **Rol:** Admin
 
 ```bash
-# Login
-TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
+curl -X PUT http://localhost:3000/api/medical-records/{{ID_REGISTRO}} \
   -H "Content-Type: application/json" \
-  -d '{"email":"house@vet.com","password":"Password123!"}' | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+  -H "Authorization: Bearer {{TOKEN}}" \
+  -d '{
+    "descripcion": "Actualización: El paciente respondió bien al tratamiento. Mejoró significativamente.",
+    "fecha": "2026-02-04"
+  }'
+```
 
-echo "Token guardado: $TOKEN"
+**Parámetros opcionales (actualizar):**
 
-# Ver mascotas
-curl -X GET http://localhost:3000/api/pets \
-  -H "Authorization: Bearer $TOKEN"
+- `descripcion` (string, entre 10 y 500 caracteres)
+- `fecha` (date, formato: YYYY-MM-DD)
+
+---
+
+### 12. Eliminar registro médico (DELETE /medical-records/:id)
+
+**Requiere:** Autenticación | **Rol:** Admin
+
+```bash
+curl -X DELETE http://localhost:3000/api/medical-records/{{ID_REGISTRO}} \
+  -H "Authorization: Bearer {{TOKEN}}"
+```
+
+---
+
+## 📝 EJEMPLO DE FLUJO COMPLETO
+
+### Paso 1: Registrarse
+
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "DrVet",
+    "email": "drvet@hospital.com",
+    "password": "SecurePass123!"
+  }'
+```
+
+### Paso 2: Login
+
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "drvet@hospital.com",
+    "password": "SecurePass123!"
+  }'
+```
+
+**Copiar el token de la respuesta**
+
+### Paso 3: Crear mascota (reemplaza {{TOKEN}} con tu token)
+
+```bash
+curl -X POST http://localhost:3000/api/pets \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {{TOKEN}}" \
+  -d '{
+    "nombre": "Rocky",
+    "especie": "Perro",
+    "raza": "Boxer",
+    "fechaNacimiento": "2022-01-12",
+    "nombreDueno": "Sofia Martinez",
+    "telefonoDueno": "3795554321"
+  }'
+```
+
+**Copiar el `_id` de la respuesta como {{ID_MASCOTA}}**
+
+### Paso 4: Crear registro médico
+
+```bash
+curl -X POST http://localhost:3000/api/medical-records \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {{TOKEN}}" \
+  -d '{
+    "petId": "{{ID_MASCOTA}}",
+    "descripcion": "Primera revisión: Perro de 2 años en excelente estado de salud. Vacunación al día. Se recomienda revisión anual.",
+    "fecha": "2026-02-04"
+  }'
+```
+
+### Paso 5: Ver historial de la mascota
+
+```bash
+curl -X GET http://localhost:3000/api/medical-records/pet/{{ID_MASCOTA}} \
+  -H "Authorization: Bearer {{TOKEN}}"
 ```
 
 ---
@@ -176,12 +285,32 @@ curl -X GET http://localhost:3000/api/pets \
 
 - [ ] Registré usuario
 - [ ] Hice login (copié el token)
+- [ ] Creé mascota (copié el ID)
 - [ ] Obtuve todas las mascotas
-- [ ] Creé una mascota (con token de admin)
+- [ ] Vi mascota por ID
 - [ ] Actualizé mascota
 - [ ] Creé registro médico
-- [ ] Probé eliminar (borró correctamente)
+- [ ] Obtuve registros de una mascota
+- [ ] Actualicé registro médico
+- [ ] Eliminé registro médico
+- [ ] Eliminé mascota
 
 ---
 
-**Última actualización:** 3 de febrero, 2026
+## 🔍 CÓDIGOS HTTP ESPERADOS
+
+| Operación              | Código | Descripción                  |
+| ---------------------- | ------ | ---------------------------- |
+| POST (crear)           | 201    | Creado exitosamente          |
+| GET (leer)             | 200    | OK                           |
+| PUT (actualizar)       | 200    | Actualizado exitosamente     |
+| DELETE                 | 200    | Eliminado exitosamente       |
+| Error de autenticación | 401    | Token inválido o faltante    |
+| Error de autorización  | 403    | Sin permisos (no eres admin) |
+| No encontrado          | 404    | Recurso no existe            |
+| Validación fallida     | 400    | Parámetros inválidos         |
+| Error del servidor     | 500    | Error interno                |
+
+---
+
+**Última actualización:** 4 de febrero, 2026
