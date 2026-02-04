@@ -1,7 +1,7 @@
 
 import { MedicalRecord } from '../models/medical-records.model';
-import { Pet } from '../models/pet.model';
-import { IPet } from '../types/pet';
+import { IPet, Pet } from '../models/pet.model';
+
 
 
 //CRUD
