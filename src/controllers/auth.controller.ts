@@ -10,16 +10,15 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, email, password} = req.body;
+    const { username, email, password } = req.body;
 
     console.log('Registering user:', username, email, password);
 
     await authService.register(username, email, password);
+
     return res.status(201).json({ message: 'Usuario creado exitosamente' });
   } catch (error: any) {
-
-    // Manejar error de usuario duplicado (código 11000 de MongoDB) y en mysql es 1062
-    if (error.code === '11000') {
+    if (error.code === 11000) {
       return res.status(409).json({ error: 'El usuario o email ya existe' });
     }
 

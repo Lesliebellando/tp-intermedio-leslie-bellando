@@ -1,34 +1,22 @@
 import { Router } from 'express';
-import { createPet, getAllPets, getPetById, updatePet, deletePet } from '../controllers/pet.controller';
+import * as petController from '../controllers/pet.controller';
 import { authenticate,authorize } from '../middlewares/auth.middleware'; // <--- El guardián
-import { petValidator } from '../validators/pet.validator';    // <--- Reglas de datos
-import validateDto from '../middlewares/dto.middleware';       // <--- El policía
-import { UserRole } from '../types/auth';// <--- Importamos el Enum de roles
+import { createPetValidator, updatePetValidator } from '../validators/pet.validator';
+import validateDto from '../middlewares/dto.middleware';
 const router = Router();
 
 
 // Todas las rutas de abajo requieren estar logueado
-router.use(authenticate); 
+router.use(authenticate, authorize(['user'])); 
 
-// Read Ruta Protegida (Dueños y Admins)
-router.get('/', getAllPets); // Obtener todas las mascotas
-router.get('/:id', getPetById); // Obtener mascota por ID
+router.post('/', authenticate, authorize(['user']), createPetValidator, 
+  validateDto, 
+  petController.createPet, petController.createPet);
 
-// Create Ruta Solo Admin
-router.post('/', authorize([UserRole.ADMIN]), petValidator, validateDto, createPet);
-// Update Ruta Solo Admin
-router.put(
-    '/:id', 
-    authorize([UserRole.ADMIN]), 
-    petValidator, 
-    validateDto, 
-    updatePet
-);
-// Delete ruta Solo Admin
-router.delete(
-    '/:id', 
-    authorize([UserRole.ADMIN]), 
-    deletePet
-);
+router.get('/', authenticate, authorize(['user']), petController.getAllPets); 
+router.get('/:id', authenticate, authorize(['user']), petController.getPetById); 
 
+router.put('/:id', updatePetValidator, validateDto, petController.updatePet);
+
+router.delete('/:id', authenticate, authorize(['user']), petController.deletePet);
 export default router;

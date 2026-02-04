@@ -4,14 +4,16 @@ import * as medicalService from '../services/medical-records.service';
 // CREATE
 export const createMedicalRecord = async (req: Request, res: Response) => {
   try {
-    const recordId = await medicalService.createMedicalRecord(req.body);
-    return res.status(201).json({ id: recordId });
+    const recordData = req.body;
+    recordData.vetId = req.user!.id; // asignar el ID del veterinario desde el token
+    const newRecord = await medicalService.createMedicalRecord(recordData);
+    return res.status(201).json(newRecord);
   } catch (error: any) {
     return res.status(500).json({ error: error.message || 'Error al crear historia clínica' });
   }
 };
 
-// READ by Pet
+// Ver el historial médico de una mascota READ all by Pet
 export const getMedicalRecordsByPet = async (req: Request, res: Response) => {
   try {
     const { petId } = req.params;
@@ -27,11 +29,11 @@ export const getMedicalRecordsByPet = async (req: Request, res: Response) => {
   }
 };
 
-// READ by ID
+// READ by ID leer historia clínica por id
 export const getMedicalRecordById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const record = await medicalService.getMedicalRecordById(id);
+  
+    const record = await medicalService.getMedicalRecordById(req.params.id);
 if (!record) {
       return res.status(404).json({ error: 'Historia clínica no encontrada' });
     }
