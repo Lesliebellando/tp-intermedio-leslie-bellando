@@ -119,7 +119,7 @@ curl -X PUT http://localhost:3000/api/pets/{{ID_MASCOTA}} \
   }'
 ```
 
----
+## Enviar todos los campos
 
 ### 7. Eliminar mascota (DELETE /pets/:id)
 
