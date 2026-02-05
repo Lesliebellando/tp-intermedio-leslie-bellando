@@ -71,6 +71,23 @@ Ejemplo de cómo se estructura una petición para **Crear una Mascota** (Endpoin
 }
 ```
 ---
+
+Se incluye una colección completa de peticiones para probar los endpoints del proyecto utilizando **Insomnia**. El archivo de exportación se encuentra en la raíz del repositorio. [Archivo Insomnia](Insomnia_2026-02-04.yaml)
+
+### 📋 Cómo importar las pruebas
+1. Descargar [Archivo Insomnia](Insomnia_2026-02-04.yaml) de este repositorio.
+2. Abrir **Insomnia**.
+3. Hacer clic en el menú de la colección o en "Create" y seleccionar **Import**.
+4. Cargar el archivo JSON.
+
+### 🔄 Flujo recomendado
+Las peticiones están numeradas para seguir el orden lógico de la aplicación:
+
+1. **Registro:** Crea un nuevo usuario en la base de datos.
+2. **Login:** Autentica al usuario y genera el **Token JWT**.
+3. **Rutas Protegidas:** El resto de las peticiones (Crear Mascota, Ver Usuarios, etc.) requieren el Token obtenido en el paso anterior.
+
+
 ## 🧪 cURLS
 Para ver la lista completa de comandos curl, por favor revisa el archivo: 👉 [Ver Guía de Comandos cURL](curls.md)
 
